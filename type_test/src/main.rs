@@ -38,7 +38,26 @@ where
         let result = self.amount + other.into();
         Money { amount: result}
     }
+}
 
+impl Add<Money> for i32
+{
+    type Output = Money;
+
+    fn add(self: i32, other: Money) -> Money {
+        let result: f64 = f64::from(self) + other.amount;
+        Money { amount: result}
+    }
+}
+
+impl Add<Money> for f64
+{
+    type Output = Money;
+
+    fn add(self: f64, other: Money) -> Money {
+        let result: f64 = self + other.amount;
+        Money { amount: result}
+    }
 }
 
 fn arithmetic_operation<T, U, F>(a: T, b: U, operation: F) -> T
@@ -57,6 +76,11 @@ fn main() {
     //  or i32
     let i: i32 = 22;
     let res = money + i; // add i32 
+    println!("{}", res);
+
+    //  or i32
+    let i: i32 = 22;
+    let res = i + money; // add i32 
     println!("{}", res);
 
     // With our generic function
