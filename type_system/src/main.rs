@@ -99,6 +99,7 @@ impl fmt::Display for Money {
 }
 
 // Percentage
+#[derive(Debug, PartialEq)]
 struct Percentage {
     value: f64
 }
@@ -127,15 +128,33 @@ impl Add<Percentage> for Percentage {
 
 
 fn main() {
-    let alice = Money::new(42.0, Currency::Euros);
-    let bob = Money::new(1337.0, Currency::Dollars);
-    println! ("Alice & Bob have {}", alice + bob);
-
-    let pourcent = Percentage::new(15.0) + Percentage::new(22.0);
-    println!("Pourcent: {}", pourcent);
-
-
-    println!("42€ + 12%: {}", Money::new(42.0, Currency::Euros) + Percentage::new(12.0));
 
     println!("12% of 42€: {}", Money::new(42.0, Currency::Euros) * Percentage::new(12.0));
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn add_money () {
+        let bob = Money::new(1337.0, Currency::Dollars);
+        let alice = Money::new(42.0, Currency::Euros);
+        assert_eq!(bob + alice, Money{amount: 1381.1, currency: Currency::Dollars});
+    }
+
+    #[test]
+    fn add_percent() {
+        assert_eq!(Percentage::new(15.0) + Percentage::new(22.0), Percentage { value: 37.0});
+    }
+
+    #[test]
+    fn money_add_percent() {
+        assert_eq!(Money::new(42.0, Currency::Euros) + Percentage::new(12.0), Money {amount: 47.04, currency: Currency::Euros});
+    }
+    
+    #[test]
+    fn money_percentage_of() {
+        assert_eq!(Money::new(42.0, Currency::Euros) * Percentage::new(12.0), Money {amount: 5.04, currency: Currency::Euros});
+    }
 }
