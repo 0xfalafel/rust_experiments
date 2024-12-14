@@ -151,11 +151,6 @@ mod tests {
     }
 
     #[test]
-    fn add_percent() {
-        assert_eq!(Money::new(42.0, Currency::Euros) + Percentage::new(12.0), Money {amount: 47.04, currency: Currency::Euros});
-    }
-    
-    #[test]
     fn add_i32() {
         assert_eq!(Money::new(42.0, Currency::Euros) + 12, Money {amount: 54.0, currency: Currency::Euros});
     }
@@ -166,10 +161,20 @@ mod tests {
     }
 
     #[test]
+    fn add_f64() {
+        assert_eq!(Money::new(7.0, Currency::Euros) + f64::from(6.0), Money {amount: 13.0, currency: Currency::Euros});
+    }
+
+    #[test]
     fn mul_f64() {
         assert_eq!(Money::new(7.0, Currency::Euros) * 6.0, Money {amount: 42.0, currency: Currency::Euros});
     }
-    
+
+    #[test]
+    fn add_percent() {
+        assert_eq!(Money::new(42.0, Currency::Euros) + Percentage::new(12.0), Money {amount: 47.04, currency: Currency::Euros});
+    }
+
     #[test]
     fn percentage_of() {
         assert_eq!(Money::new(42.0, Currency::Euros) * Percentage::new(12.0), Money {amount: 5.04, currency: Currency::Euros});
