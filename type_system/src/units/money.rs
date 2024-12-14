@@ -75,6 +75,32 @@ impl Add<Money> for Money {
     }
 }
 
+// Implement Multiplication for Money
+
+impl Mul<f64> for Money {
+    type Output = Money;
+
+    fn mul(self, rhs: f64) -> Self::Output {
+        Money::new(self.amount * rhs, self.currency)
+    }
+}
+
+impl Mul<i32> for Money {
+    type Output = Money;
+    fn mul(self, rhs: i32) -> Self::Output {
+        Money::new(self.amount * f64::from(rhs), self.currency)
+    }
+}
+
+impl Mul<Money> for Money {
+    type Output = Money;
+
+    fn mul(self, other: Money) -> Self::Output {
+        let other = other.conversion(self.currency);
+        Money::new(self.amount * other.amount, self.currency)
+    }
+}
+
 // Implement Percentage operations
 impl Add<Percentage> for Money {
     type Output = Money;
@@ -132,6 +158,16 @@ mod tests {
     #[test]
     fn add_i32() {
         assert_eq!(Money::new(42.0, Currency::Euros) + 12, Money {amount: 54.0, currency: Currency::Euros});
+    }
+    
+    #[test]
+    fn mul_i32() {
+        assert_eq!(Money::new(42.0, Currency::Euros) * 12, Money {amount: 504.0, currency: Currency::Euros});
+    }
+
+    #[test]
+    fn mul_f64() {
+        assert_eq!(Money::new(7.0, Currency::Euros) * 6.0, Money {amount: 42.0, currency: Currency::Euros});
     }
     
     #[test]
