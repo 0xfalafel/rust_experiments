@@ -99,3 +99,25 @@ impl fmt::Display for Money {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn add () {
+        let bob = Money::new(1337.0, Currency::Dollars);
+        let alice = Money::new(42.0, Currency::Euros);
+        assert_eq!(bob + alice, Money{amount: 1381.1, currency: Currency::Dollars});
+    }
+
+    #[test]
+    fn add_percent() {
+        assert_eq!(Money::new(42.0, Currency::Euros) + Percentage::new(12.0), Money {amount: 47.04, currency: Currency::Euros});
+    }
+    
+    #[test]
+    fn percentage_of() {
+        assert_eq!(Money::new(42.0, Currency::Euros) * Percentage::new(12.0), Money {amount: 5.04, currency: Currency::Euros});
+    }
+}

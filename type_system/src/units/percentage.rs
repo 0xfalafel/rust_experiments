@@ -28,3 +28,14 @@ impl Add<Percentage> for Percentage {
         Percentage::new(self.value + rhs.value)
     }
 }
+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn add() {
+        assert_eq!(Percentage::new(15.0) + Percentage::new(22.0), Percentage { value: 37.0});
+    }
+}
