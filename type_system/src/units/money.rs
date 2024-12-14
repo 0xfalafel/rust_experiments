@@ -59,6 +59,13 @@ impl Add<f64> for Money {
     }
 }
 
+impl Add<i32> for Money {
+    type Output = Money;
+    fn add(self, rhs: i32) -> Self::Output {
+        Money::new(self.amount + f64::from(rhs), self.currency)
+    }
+}
+
 impl Add<Money> for Money {
     type Output = Money;
 
@@ -100,6 +107,12 @@ impl fmt::Display for Money {
     }
 }
 
+impl Into<f64> for Money {
+    fn into(self) -> f64 {
+        self.amount
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -114,6 +127,11 @@ mod tests {
     #[test]
     fn add_percent() {
         assert_eq!(Money::new(42.0, Currency::Euros) + Percentage::new(12.0), Money {amount: 47.04, currency: Currency::Euros});
+    }
+    
+    #[test]
+    fn add_i32() {
+        assert_eq!(Money::new(42.0, Currency::Euros) + 12, Money {amount: 54.0, currency: Currency::Euros});
     }
     
     #[test]
