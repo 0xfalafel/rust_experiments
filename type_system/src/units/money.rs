@@ -144,7 +144,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn add () {
+    fn add_money () {
         let bob = Money::new(1337.0, Currency::Dollars);
         let alice = Money::new(42.0, Currency::Euros);
         assert_eq!(bob + alice, Money{amount: 1381.1, currency: Currency::Dollars});

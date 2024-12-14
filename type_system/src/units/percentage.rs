@@ -29,6 +29,28 @@ impl Add<Percentage> for Percentage {
     }
 }
 
+impl Add<f64> for Percentage {
+    type Output = f64;
+
+    fn add(self, rhs: f64) -> Self::Output {
+        rhs + (rhs * self.value / 100.0)
+    }
+}
+
+impl Add<Percentage> for f64 {
+    type Output = f64;
+
+    fn add(self, rhs: Percentage) -> Self::Output {
+        rhs.add(self)
+    }
+}
+
+
+impl Into<f64> for Percentage {
+    fn into(self) -> f64 {
+        self.value
+    }
+}
 
 #[cfg(test)]
 mod tests {
