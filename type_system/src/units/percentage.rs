@@ -1,5 +1,5 @@
 use std::fmt;
-use std::ops::Add;
+use std::ops::{Add, Mul};
 
 // Percentage
 #[derive(Debug, PartialEq, Clone, Copy)]
@@ -42,6 +42,21 @@ impl Add<Percentage> for f64 {
 
     fn add(self, rhs: Percentage) -> Self::Output {
         rhs.add(self)
+    }
+}
+
+impl Mul<f64> for Percentage {
+    type Output = f64;
+
+    fn mul(self, rhs: f64) -> Self::Output {
+        rhs * self.value / 100.0
+    }
+}
+
+impl Mul<Percentage> for f64 {
+    type Output = f64;
+    fn mul(self, rhs: Percentage) -> Self::Output {
+        rhs.mul(self)
     }
 }
 
