@@ -139,6 +139,12 @@ impl Into<f64> for Money {
     }
 }
 
+impl Into<i32> for Money {
+    fn into(self) -> i32 {
+        self.amount as i32
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

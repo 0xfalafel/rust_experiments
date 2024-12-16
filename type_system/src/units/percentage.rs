@@ -45,6 +45,23 @@ impl Add<Percentage> for f64 {
     }
 }
 
+
+impl Add<i32> for Percentage {
+    type Output = f64;
+
+    fn add(self, rhs: i32) -> Self::Output {
+        f64::from(rhs) + (f64::from(rhs) * self.value / 100.0)
+    }
+}
+
+impl Add<Percentage> for i32 {
+    type Output = f64;
+
+    fn add(self, rhs: Percentage) -> Self::Output {
+        rhs.add(self)
+    }
+}
+
 impl Mul<f64> for Percentage {
     type Output = f64;
 
@@ -64,6 +81,12 @@ impl Mul<Percentage> for f64 {
 impl Into<f64> for Percentage {
     fn into(self) -> f64 {
         self.value
+    }
+}
+
+impl Into<i32> for Percentage {
+    fn into(self) -> i32 {
+        self.value as i32
     }
 }
 
