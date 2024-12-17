@@ -29,6 +29,22 @@ impl Add<Percentage> for Percentage {
     }
 }
 
+impl Add<Percentage> for f64 {
+    type Output = f64;
+
+    fn add(self, rhs: Percentage) -> Self::Output {
+        self + (self * rhs.value / 100.0)
+    }
+}
+
+impl Add<f64> for Percentage {
+    type Output = f64;
+
+    fn add(self, rhs: f64) -> Self::Output {
+        rhs.add(self)
+    }
+}
+
 
 #[cfg(test)]
 mod tests {
@@ -37,5 +53,10 @@ mod tests {
     #[test]
     fn add() {
         assert_eq!(Percentage::new(15.0) + Percentage::new(22.0), Percentage { value: 37.0});
+    }
+
+    #[test]
+    fn add_f64() {
+        assert_eq!(Percentage::new(15.0) + 100.0, 115.0);
     }
 }
