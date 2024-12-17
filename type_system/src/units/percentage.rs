@@ -1,7 +1,7 @@
 use std::fmt;
 use std::ops::Add;
 
-// Percentage
+// Our Percentage Type
 #[derive(Debug, PartialEq, Clone, Copy)]
 pub struct Percentage {
     pub value: f64
@@ -21,6 +21,7 @@ impl fmt::Display for Percentage {
 
 // Implement operations for Percent
 
+// 10% + 23% = 33%
 impl Add<Percentage> for Percentage {
     type Output = Percentage;
 
@@ -29,6 +30,7 @@ impl Add<Percentage> for Percentage {
     }
 }
 
+// 100.0 + 10% = 110.0
 impl Add<Percentage> for f64 {
     type Output = f64;
 
@@ -51,12 +53,12 @@ mod tests {
     use super::*;
 
     #[test]
-    fn add() {
+    fn add() { // 15% + 25% = 37%
         assert_eq!(Percentage::new(15.0) + Percentage::new(22.0), Percentage { value: 37.0});
     }
 
     #[test]
-    fn add_f64() {
+    fn add_f64() { // 100.0 + 15% = 115.0
         assert_eq!(Percentage::new(15.0) + 100.0, 115.0);
     }
 }
