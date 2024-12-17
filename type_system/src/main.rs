@@ -24,6 +24,39 @@ impl ResType {
     fn is_float(self) -> bool {
         matches!(self, ResType::Float(_))
     }
+
+    fn arithmetic_operation<F, T>(self, rhs: ResType, op: F) -> ResType
+    where
+        T: Copy + Add<Output = Money>,
+        F: Fn(Money, T) -> ResType,
+    {
+        // if one of the types is Money, we return some Money
+        if self.is_money() || rhs.is_money() {
+            let (money, other) = match (self, rhs) {
+                (a, b) if a.is_money() => (a, b),
+                (a, b) if b.is_money() => (b, a),
+                _ => unreachable!("Either a or b is of type money.")
+            };
+
+            if let ResType::Money(m) = money {
+                let result = match other {
+                    ResType::Money(m2) => op(m, m2),
+                    ResType::Float(f) => ResType::Money(m + f),
+                    ResType::Percent(p) => ResType::Money(m + p)
+                };
+
+                return result;
+            }
+        }
+
+        todo!()
+    }
+}
+
+impl Into<ResType> for Money {
+    fn into(self) -> ResType {
+        ResType::Money(self)
+    }
 }
 
 // Priority of types:
