@@ -23,6 +23,7 @@ impl Money {
     }
 }
 
+// 10€ + 20€ = 30€
 impl Add<Money> for Money {
     type Output = Money;
 
@@ -33,12 +34,13 @@ impl Add<Money> for Money {
                 currency: self.currency
             }
         } else {
-            todo!() // implement some conversion opertion
+            todo!() // implement some conversion operation
                     // but let's keep this simple for now
         }
     }
 }
 
+// 10€ + 5.0 = 15€
 impl Add<f64> for Money {
     type Output = Money;
 
@@ -48,6 +50,7 @@ impl Add<f64> for Money {
 }
 
 // Implement Percentage operations
+// 100€ + 15% = 115€
 impl Add<Percentage> for Money {
     type Output = Money;
 
@@ -73,12 +76,12 @@ mod tests {
     use super::*;
 
     #[test]
-    fn add_f64 () {
+    fn add_f64 () { // 100€ + 42€ = 142€
         assert_eq!(Money::new(100.0, Currency::Euros) + 42.0, Money{amount: 142.0, currency: Currency::Euros});
     }
 
     #[test]
-    fn add_percent() {
-        assert_eq!(Money::new(42.0, Currency::Euros) + Percentage::new(12.0), Money {amount: 47.04, currency: Currency::Euros});
+    fn add_percent() { // 100€ + 30% = 130€
+        assert_eq!(Money::new(100.0, Currency::Euros) + Percentage::new(30.0), Money {amount: 130.0, currency: Currency::Euros});
     }   
 }
