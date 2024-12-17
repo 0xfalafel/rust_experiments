@@ -12,7 +12,6 @@ pub enum Currency {
 
 // Money Type
 #[derive(Debug, PartialEq, Clone, Copy)]
-
 pub struct Money {
     pub amount: f64,
     pub currency: Currency

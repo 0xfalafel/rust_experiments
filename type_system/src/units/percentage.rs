@@ -2,7 +2,7 @@ use std::fmt;
 use std::ops::Add;
 
 // Percentage
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone, Copy)]
 pub struct Percentage {
     pub value: f64
 }
