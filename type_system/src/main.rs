@@ -26,6 +26,10 @@ impl ResType {
     }
 }
 
+// Priority of types:
+// Money > Float > Percent
+// 5€ > 3.14 > 1 %
+
 impl Add<ResType> for ResType {
     type Output = ResType;
 
@@ -85,6 +89,11 @@ impl Add<ResType> for ResType {
 
 
 fn main() {
-    println!("42€ + 12%: {}", Money::new(42.0, Currency::Euros) + Percentage::new(12.0));
-    // 42€ + 12%: 47.04€
+    let a = ResType::Money(Money::new(110.0, Currency::Euros));
+    let b = ResType::Percent(Percentage::new(11.0));
+
+    let res = a + b;
+    if let ResType::Money(m) = res {
+        println!("{}", m);
+    }
 }
