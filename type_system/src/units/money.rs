@@ -24,6 +24,22 @@ impl Money {
     }
 }
 
+impl Add<Money> for Money {
+    type Output = Money;
+
+    fn add(self, rhs: Money) -> Self::Output {
+        if self.currency == rhs.currency {
+            Money { 
+                amount: self.amount + rhs.amount,
+                currency: self.currency
+            }
+        } else {
+            todo!() // implement some conversion opertion
+                    // but let's keep this simple for now
+        }
+    }
+}
+
 impl Add<f64> for Money {
     type Output = Money;
 
