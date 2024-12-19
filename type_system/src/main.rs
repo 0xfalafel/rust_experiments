@@ -303,4 +303,7 @@ fn main() {
 
     println!("42€ + 12: {}", Money::new(42.0, Currency::Euros) + 12);
     println!("12 + 11%: {}", ResType::Int(12) + ResType::Percent(Percentage::new(11.0)));
+
+    let x = Percentage::new(13.0) / Percentage::new(0.0);
+    println!("{}", x);
 }
