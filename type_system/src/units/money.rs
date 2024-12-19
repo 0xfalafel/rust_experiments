@@ -70,8 +70,45 @@ impl Money {
     }
 }
 
+// Parse Currency from Str
+#[derive(Debug, Eq, PartialEq)]
+pub struct ParseMoneyError;
+
+impl FromStr for Money {
+    type Err = ParseMoneyError;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+
+        let first_char = s.chars().next().unwrap_or_else(||
+            return Err(ParseMoneyError)
+        );
+
+        // If the first char isn't a digit (0..9)
+        if s.chars().next().map(|c| !c.is_ascii_digit()).unwrap() {
+            
+            // It must be the currency
+
+        }
+
+        match (s.chars().nth(0), s.chars().last()) {
+
+            
+            _ => return Err(ParseMoneyError)
+        }
+
+        let currency = match s {
+            "€" => Currency::Euros,
+            "$" => Currency::Dollars,
+            _ => return Err(ParseMoneyError)
+        };
+
+        Ok(currency)
+    }
+}
+
+
 /*
-    Implement arithmetic operation for Money
+    Implement Arithmetic Operation for Money
     with other types
 
     i.e 42€ + 10.0
