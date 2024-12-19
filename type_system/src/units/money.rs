@@ -1,5 +1,6 @@
 use std::fmt;
 use std::ops::{Add, Mul};
+use duplicate::duplicate_item;
 
 use crate::Percentage;
 
@@ -23,7 +24,6 @@ impl fmt::Display for Currency {
 
 // Money Type
 #[derive(Debug, PartialEq, Clone, Copy)]
-
 pub struct Money {
     pub amount: f64,
     pub currency: Currency
@@ -51,20 +51,16 @@ impl Money {
     }
 }
 
-impl Add<f64> for Money {
+
+#[duplicate_item(Type; [f64]; [i32];)]
+impl Add<Type> for Money {
     type Output = Money;
 
-    fn add(self, rhs: f64) -> Self::Output {
-        Money::new(self.amount + rhs, self.currency)
-    }
-}
-
-impl Add<i32> for Money {
-    type Output = Money;
-    fn add(self, rhs: i32) -> Self::Output {
+    fn add(self, rhs: Type) -> Self::Output {
         Money::new(self.amount + f64::from(rhs), self.currency)
     }
 }
+
 
 impl Add<Money> for Money {
     type Output = Money;
