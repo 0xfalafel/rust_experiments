@@ -1,5 +1,5 @@
 use std::fmt;
-use std::ops::{Add, Mul};
+use std::ops::{Add, Sub, Mul, Div};
 use duplicate::duplicate_item;
 
 use crate::Percentage;
@@ -51,13 +51,54 @@ impl Money {
     }
 }
 
+/*
+    Implement arithmetic operation for Money
+    with other types
 
+    i.e 42€ + 10.0
+*/
+
+// implement Add for f64, i32
 #[duplicate_item(Type; [f64]; [i32];)]
+
 impl Add<Type> for Money {
     type Output = Money;
 
     fn add(self, rhs: Type) -> Self::Output {
         Money::new(self.amount + f64::from(rhs), self.currency)
+    }
+}
+
+// implement Sub for f64, i32
+#[duplicate_item(Type; [f64]; [i32];)]
+
+impl Sub<Type> for Money {
+    type Output = Money;
+
+    fn sub(self, rhs: Type) -> Self::Output {
+        Money::new(self.amount - f64::from(rhs), self.currency)
+    }
+}
+
+// implement Mul for f64, i32
+#[duplicate_item(Type; [f64]; [i32];)]
+
+impl Mul<Type> for Money {
+    type Output = Money;
+
+    fn mul(self, rhs: Type) -> Self::Output {
+        Money::new(self.amount * f64::from(rhs), self.currency)
+    }
+}
+
+// implement Div for f64, i32
+#[duplicate_item(Type; [f64]; [i32];)]
+
+impl Div<Type> for Money {
+    type Output = Money;
+
+    fn div(self, rhs: Type) -> Self::Output {
+        Money::new(self.amount / f64::from(rhs), self.currency)
     }
 }
 
@@ -68,23 +109,6 @@ impl Add<Money> for Money {
     fn add(self, other: Money) -> Self::Output {
         let other = other.conversion(self.currency);
         Money::new(self.amount + other.amount, self.currency)
-    }
-}
-
-// Implement Multiplication for Money
-
-impl Mul<f64> for Money {
-    type Output = Money;
-
-    fn mul(self, rhs: f64) -> Self::Output {
-        Money::new(self.amount * rhs, self.currency)
-    }
-}
-
-impl Mul<i32> for Money {
-    type Output = Money;
-    fn mul(self, rhs: i32) -> Self::Output {
-        Money::new(self.amount * f64::from(rhs), self.currency)
     }
 }
 
