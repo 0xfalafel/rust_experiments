@@ -1,5 +1,6 @@
 use std::fmt;
 use std::ops::{Add, Sub, Mul, Div};
+use std::str::FromStr;
 use duplicate::duplicate_item;
 
 use crate::Percentage;
@@ -18,6 +19,24 @@ impl fmt::Display for Currency {
             Currency::Dollars => '$',
         };
         write!(f, "{}", symbol)
+    }
+}
+
+// Parse Currency from Str
+#[derive(Debug, Eq, PartialEq)]
+pub struct ParseCurrencyError;
+
+impl FromStr for Currency {
+    type Err = ParseCurrencyError;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let currency = match s {
+            "€" => Currency::Euros,
+            "$" => Currency::Dollars,
+            _ => return Err(ParseCurrencyError)
+        };
+
+        Ok(currency)
     }
 }
 
@@ -170,7 +189,15 @@ mod tests {
     use super::*;
 
     #[test]
-    fn add_money () {
+    fn currency_from_str() {
+        assert_eq!(Currency::from_str("€"), Ok(Currency::Euros));
+        assert_eq!(Currency::from_str("$"), Ok(Currency::Dollars));
+        assert_eq!(Currency::from_str("Nothing to see here"), Err(ParseCurrencyError));
+    }
+
+
+    #[test]
+    fn add_money() {
         let bob = Money::new(1337.0, Currency::Dollars);
         let alice = Money::new(42.0, Currency::Euros);
         assert_eq!(bob + alice, Money{amount: 1381.1, currency: Currency::Dollars});
