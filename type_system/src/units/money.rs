@@ -166,6 +166,9 @@ impl Div<Type> for Money {
 }
 
 
+/*
+    Implement operation for Money with money
+
 impl Add<Money> for Money {
     type Output = Money;
 
@@ -174,23 +177,45 @@ impl Add<Money> for Money {
         Money::new(self.amount + other.amount, self.currency)
     }
 }
+*/
 
-impl Mul<Money> for Money {
-    type Output = Money;
-
-    fn mul(self, other: Money) -> Self::Output {
-        let other = other.conversion(self.currency);
-        Money::new(self.amount * other.amount, self.currency)
-    }
+macro_rules! impl_arithmetic_op_for_Money {
+    ($trait_name:ident $fn_name:ident $op:tt) => {
+        impl $trait_name<Money> for Money {
+            type Output = Money;
+        
+            fn $fn_name(self, other: Money) -> Self::Output {
+                let other = other.conversion(self.currency);
+                Money::new(self.amount $op other.amount, self.currency)
+            }
+        }        
+    };
 }
 
+impl_arithmetic_op_for_Money!(Add add +);
+impl_arithmetic_op_for_Money!(Sub sub -);
+impl_arithmetic_op_for_Money!(Mul mul *);
+impl_arithmetic_op_for_Money!(Div div /);
+
 // Implement Percentage operations
+
 impl Add<Percentage> for Money {
     type Output = Money;
 
     fn add(self, rhs: Percentage) -> Self::Output {
         Money {
             amount: self.amount + (self.amount * rhs.value / 100.0),
+            currency: self.currency
+        }
+    }
+}
+
+impl Sub<Percentage> for Money {
+    type Output = Money;
+
+    fn sub(self, rhs: Percentage) -> Self::Output {
+        Money {
+            amount: self.amount - (self.amount * rhs.value / 100.0),
             currency: self.currency
         }
     }
@@ -256,6 +281,14 @@ mod tests {
     }
 
     #[test]
+    fn arithmetic_operations() {
+        assert_eq!(Money::from_str("100€").unwrap() + Money::from_str("500€").unwrap(), Money::from_str("600€").unwrap());
+        assert_eq!(Money::from_str("1000€").unwrap() - Money::from_str("500€").unwrap(), Money::from_str("500€").unwrap());
+        assert_eq!(Money::from_str("300€").unwrap() * Money::from_str("2€").unwrap(), Money::from_str("600€").unwrap());
+        assert_eq!(Money::from_str("100€").unwrap() / Money::from_str("2€").unwrap(), Money::from_str("50€").unwrap());
+    }
+
+    #[test]
     fn add_i32() {
         assert_eq!(Money::new(42.0, Currency::Euros) + 12, Money {amount: 54.0, currency: Currency::Euros});
     }
@@ -278,6 +311,11 @@ mod tests {
     #[test]
     fn add_percent() {
         assert_eq!(Money::new(42.0, Currency::Euros) + Percentage::new(12.0), Money {amount: 47.04, currency: Currency::Euros});
+    }
+
+    #[test]
+    fn sub_percent() {
+        assert_eq!(Money::from_str("100€").unwrap() - Percentage::new(12.0), Money::from_str("88€").unwrap());
     }
 
     #[test]
