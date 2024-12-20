@@ -6,7 +6,7 @@ use crate::Percentage;
 
 #[derive(Debug, Clone, Copy)]
 pub enum ResType {
-    Int(i32),
+    Int(i128),
     Float(f64),
     Money(Money),
     Percent(Percentage)
@@ -48,10 +48,10 @@ impl Into<f64> for ResType {
     }
 }
 
-impl Into<i32> for ResType {
-    fn into(self) -> i32 {
+impl Into<i128> for ResType {
+    fn into(self) -> i128 {
         match self {
-            ResType::Float(f) => f as i32,
+            ResType::Float(f) => f as i128,
             ResType::Int(i) => i,
             ResType::Money(m) => m.into(),
             ResType::Percent(p) => p.into()
