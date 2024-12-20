@@ -241,15 +241,10 @@ impl fmt::Display for Money {
     }
 }
 
-impl Into<f64> for Money {
-    fn into(self) -> f64 {
-        self.amount
-    }
-}
-
-impl Into<i32> for Money {
-    fn into(self) -> i32 {
-        self.amount as i32
+#[duplicate_item(Type; [f64]; [i128]; [i32];)]
+impl Into<Type> for Money {
+    fn into(self) -> Type {
+        self.amount as Type
     }
 }
 

@@ -1,5 +1,6 @@
 use std::fmt;
 use std::ops::{Add, Sub, Mul, Div};
+use duplicate::duplicate_item;
 
 // Percentage
 #[derive(Debug, PartialEq, Clone, Copy)]
@@ -97,16 +98,10 @@ impl Mul<Percentage> for f64 {
     }
 }
 
-
-impl Into<f64> for Percentage {
-    fn into(self) -> f64 {
-        self.value
-    }
-}
-
-impl Into<i32> for Percentage {
-    fn into(self) -> i32 {
-        self.value as i32
+#[duplicate_item(Type; [f64]; [i128]; [i32];)]
+impl Into<Type> for Percentage {
+    fn into(self) -> Type {
+        self.value as Type
     }
 }
 
