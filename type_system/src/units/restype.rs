@@ -35,67 +35,6 @@ impl ResType {
     fn is_percentage(self) -> bool {
         matches!(self, ResType::Percent(_))
     }
-
-    // fn arithmetic_operation<F, T, U>(self, rhs: ResType, operation: F) -> ResType
-    // where
-    //     F: Fn(T, U) -> T,
-    // {
-    //     // We have some money, the result will be money
-    //     if self.is_money() || rhs.is_money() {
-    //         let (money, other) = match (self, rhs) {
-    //             (a, other) if a.is_money() => (a, other),
-    //             (a, other) if other.is_money() => (other, a),
-    //             (_, _) => unreachable!(),
-    //         };
-
-    //         let x: Money = money.money().unwrap();
-
-    //         match other {
-    //             ResType::Percent(p) => {
-    //                 return ResType::Money(operation(x, p))
-    //             },
-    //             ResType::Float(f) => {
-    //                 return ResType::Money(x + f);
-    //             },
-    //             ResType::Money(m) => {
-    //                 return ResType::Money(x + m);
-    //             },
-    //             ResType::Int(i) => {
-    //                 return ResType::Money(x + i);
-    //             },
-    //         }
-    //     }
-        
-
-    //     // We have some float, the result will be a float
-    //     if self.is_float() || rhs.is_float() {
-    //         let (float, other) = match (self, rhs) {
-    //             (a, other) if a.is_float() => (a, other),
-    //             (a, other) if other.is_float() => (other, a),
-    //             (_, _) => unreachable!(),
-    //         };
-
-    //         let x: f64 = float.into();
-
-    //         match other {
-    //             ResType::Percent(p) => {
-    //                 return ResType::Float(x + p)
-    //             },
-    //             ResType::Float(f) => {
-    //                 return ResType::Float(x + f);
-    //             },
-    //             ResType::Int(i) => {
-    //                 return ResType::Float(x + f64::from(i));
-    //             },
-    //             ResType::Money(_) => {
-    //                 unreachable!("Money should have been catch by the previous code.")
-    //             },
-    //         }
-    //     }
-        
-    //     todo!()
-
-    // }
 }
 
 impl Into<f64> for ResType {
