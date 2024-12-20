@@ -79,30 +79,37 @@ impl FromStr for Money {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
 
-        let first_char = s.chars().next().unwrap_or_else(||
-            return Err(ParseMoneyError)
-        );
+        let first_char = s.chars().next().ok_or(ParseMoneyError)?;
+        let last_char = s.chars().last().ok_or(ParseMoneyError)?;
 
-        // If the first char isn't a digit (0..9)
-        if s.chars().next().map(|c| !c.is_ascii_digit()).unwrap() {
+        let mut s: String = s.to_owned();
+
+        // Currency symbol is at the start: $47.0
+        if !first_char.is_ascii_digit() {
+            let currency = Currency::from_str(&first_char.to_string()).map_err(|_| ParseMoneyError)?;
+
+            s.remove(0); // remove currency symbol / first char
+            let s = s.trim(); // remove whitespace
+
+            let amount: f64 = f64::from_str(s).map_err(|_| ParseMoneyError)?;
+
+            Ok(Money::new(amount, currency))
+
+
+        // Currency symbol is at the end: 12.0€
+        } else if !last_char.is_ascii_digit() {
+            let currency = Currency::from_str(&last_char.to_string()).map_err(|_| ParseMoneyError)?;
+
+            s.pop(); // remove currency symbol / last char
+            let s: &str = s.trim(); // remove whitespace
             
-            // It must be the currency
+            let amount: f64 = f64::from_str(s).map_err(|_| ParseMoneyError)?;
 
+            Ok(Money::new(amount, currency))
+
+        } else {
+            Err(ParseMoneyError)
         }
-
-        match (s.chars().nth(0), s.chars().last()) {
-
-            
-            _ => return Err(ParseMoneyError)
-        }
-
-        let currency = match s {
-            "€" => Currency::Euros,
-            "$" => Currency::Dollars,
-            _ => return Err(ParseMoneyError)
-        };
-
-        Ok(currency)
     }
 }
 
@@ -230,6 +237,14 @@ mod tests {
         assert_eq!(Currency::from_str("€"), Ok(Currency::Euros));
         assert_eq!(Currency::from_str("$"), Ok(Currency::Dollars));
         assert_eq!(Currency::from_str("Nothing to see here"), Err(ParseCurrencyError));
+    }
+
+    #[test]
+    fn money_from_str() {
+        assert_eq!(Money::from_str("42.0€"), Ok(Money{amount: 42.0, currency: Currency::Euros}));
+        assert_eq!(Money::from_str("42€"), Ok(Money{amount: 42.0, currency: Currency::Euros}));
+        assert_eq!(Money::from_str("$ 13"), Ok(Money{amount: 13.0, currency: Currency::Dollars}));
+        assert_eq!(Money::from_str("$ 13 $"), Err(ParseMoneyError));
     }
 
 
