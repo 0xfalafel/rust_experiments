@@ -1,6 +1,7 @@
 use std::fmt;
 use std::ops::{Add, Sub, Mul, Div};
 use std::str::FromStr;
+use std::convert::TryFrom;
 use duplicate::duplicate_item;
 
 use crate::Percentage;
@@ -164,6 +165,17 @@ impl Div<Type> for Money {
         Money::new(self.amount / f64::from(rhs), self.currency)
     }
 }
+
+// Arithmetic operations for i128
+impl Add<i128> for Money {
+    type Output = Money;
+
+    fn add(self, rhs: i128) -> Self::Output {
+        let other = f128::try_from(rhs)?;
+        Money::new(self.amount + other, self.currency)
+    }
+}
+
 
 
 /*
