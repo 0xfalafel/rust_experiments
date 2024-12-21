@@ -1,7 +1,6 @@
 use std::fmt;
 use std::ops::{Add, Sub, Mul, Div};
 use std::str::FromStr;
-use std::convert::TryFrom;
 use duplicate::duplicate_item;
 
 use crate::Percentage;
@@ -168,14 +167,23 @@ impl Div<Type> for Money {
 
 // Arithmetic operations for i128
 impl Add<i128> for Money {
-    type Output = Money;
+    type Output = Result<Money, PrecisonLossError>;
 
     fn add(self, rhs: i128) -> Self::Output {
-        let other = f128::try_from(rhs)?;
-        Money::new(self.amount + other, self.currency)
+        let other: f64 = try_to_f64(rhs)?;
+        let money = Money::new(self.amount + other, self.currency);
+        Ok(money)
     }
 }
 
+struct PrecisonLossError;
+
+fn try_to_f64(v: i128) -> Result<f64, PrecisonLossError> {
+    let attempt = v as f64;
+    (attempt as i128 == v)
+        .then_some(attempt)
+        .ok_or(PrecisonLossError)
+}
 
 
 /*
