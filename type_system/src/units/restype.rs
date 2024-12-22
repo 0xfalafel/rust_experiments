@@ -12,6 +12,12 @@ pub enum ResType {
     Percent(Percentage)
 }
 
+#[derive(Debug, PartialEq, Eq)]
+pub enum CalculationError {
+    PrecisonLoss,
+    InvalidOperation
+}
+
 impl ResType {
     fn is_money(self) -> bool {
         matches!(self, ResType::Money(_))
@@ -74,7 +80,7 @@ macro_rules! impl_arithmetic_op_for_ResType {
     ($trait_name:ident $fn_name:ident $op:tt) => {
 
         impl $trait_name <ResType> for ResType {
-            type Output = ResType;
+            type Output = Result<ResType, CalculationError>;
 
             fn $fn_name (self, rhs: ResType) -> Self::Output {
                 
@@ -90,16 +96,21 @@ macro_rules! impl_arithmetic_op_for_ResType {
 
                     match other {
                         ResType::Percent(p) => {
-                            return ResType::Money(x $op p)
+                            let money = (x $op p); 
+                            return Ok(ResType::Money(money))
                         },
                         ResType::Float(f) => {
-                            return ResType::Money(x $op f);
+                            return Ok(ResType::Money(x $op f));
                         },
                         ResType::Money(m) => {
-                            return ResType::Money(x $op m);
+                            return Ok(ResType::Money(x $op m));
                         },
                         ResType::Int(i) => {
-                            return ResType::Money(x $op i);
+                            let money = match x $op i {
+                                Ok(val) => val,
+                                Err(_)  => return Err(CalculationError::PrecisonLoss)
+                            };
+                            return Ok(ResType::Money(money));
                         },
                     }
                 }
@@ -117,13 +128,17 @@ macro_rules! impl_arithmetic_op_for_ResType {
 
                     match other {
                         ResType::Percent(p) => {
-                            return ResType::Float(x $op p)
+                            return Ok(ResType::Float(x $op p))
                         },
                         ResType::Float(f) => {
-                            return ResType::Float(x $op f);
+                            return Ok(ResType::Float(x $op f));
                         },
                         ResType::Int(i) => {
-                            return ResType::Float(x $op f64::from(i));
+                            let f = match try_to_f64(i) {
+                                Ok(val) => val,
+                                Err(_) => return Err(CalculationError::PrecisonLoss)
+                            };
+                            return Ok(ResType::Float(x $op f));
                         },
                         ResType::Money(_) => {
                             unreachable!("Money should have been catch by the previous code.")
@@ -139,14 +154,18 @@ macro_rules! impl_arithmetic_op_for_ResType {
                         (_, _) => unreachable!(),
                     };
 
-                    let x: i32 = int.into();
+                    let x: i128 = int.into();
 
                     match other {
                         ResType::Percent(p) => {
-                            return ResType::Float(x $op p)
+                            let res = match x $op p {
+                                Ok(val) => val,
+                                Err(_)  => return Err(CalculationError::PrecisonLoss)
+                            };
+                            return Ok(ResType::Float(res))
                         },
                         ResType::Int(i) => {
-                            return ResType::Int(x $op i);
+                            return Ok(ResType::Int(x $op i));
                         },
                         _ => unreachable!("Other types should have been catch by the previously."),
                     }
@@ -160,7 +179,7 @@ macro_rules! impl_arithmetic_op_for_ResType {
                         ResType::Percent(p1),
                         ResType::Percent(p2)
                     ) = (self, rhs) {
-                        return ResType::Percent(p1 $op p2)
+                        return Ok(ResType::Percent(p1 $op p2))
                     }
                     
                     unreachable!("By construction, we should have 2 percentage type.")
@@ -177,3 +196,12 @@ impl_arithmetic_op_for_ResType!(Add add +);
 impl_arithmetic_op_for_ResType!(Sub sub +);
 impl_arithmetic_op_for_ResType!(Mul mul +);
 impl_arithmetic_op_for_ResType!(Div div +);
+
+struct PrecisonLossError;
+
+fn try_to_f64(v: i128) -> Result<f64, PrecisonLossError> {
+    let attempt = v as f64;
+    (attempt as i128 == v)
+        .then_some(attempt)
+        .ok_or(PrecisonLossError)
+}

@@ -2,6 +2,8 @@ use std::fmt;
 use std::ops::{Add, Sub, Mul, Div};
 use duplicate::duplicate_item;
 
+use super::math_utils::{try_to_f64, PrecisonLossError};
+
 // Percentage
 #[derive(Debug, PartialEq, Clone, Copy)]
 pub struct Percentage {
@@ -67,16 +69,19 @@ impl Add<Percentage> for f64 {
 }
 
 
-impl Add<i32> for Percentage {
-    type Output = f64;
+impl Add<i128> for Percentage {
+    type Output = Result<f64, PrecisonLossError>;
 
-    fn add(self, rhs: i32) -> Self::Output {
-        f64::from(rhs) + (f64::from(rhs) * self.value / 100.0)
+    fn add(self, rhs: i128) -> Self::Output {
+        // TODO, check if we can do thing while still being an i128
+        let rhs: f64 = try_to_f64(rhs)?;
+        let res = rhs + (rhs * self.value / 100.0);
+        Ok(res)
     }
 }
 
-impl Add<Percentage> for i32 {
-    type Output = f64;
+impl Add<Percentage> for i128 {
+    type Output = Result<f64, PrecisonLossError>;
 
     fn add(self, rhs: Percentage) -> Self::Output {
         rhs.add(self)

@@ -2,6 +2,7 @@ use std::fmt;
 use std::ops::{Add, Sub, Mul, Div};
 use std::str::FromStr;
 use duplicate::duplicate_item;
+use crate::units::math_utils::{try_to_f64, PrecisonLossError};
 
 use crate::Percentage;
 
@@ -170,21 +171,14 @@ impl Add<i128> for Money {
     type Output = Result<Money, PrecisonLossError>;
 
     fn add(self, rhs: i128) -> Self::Output {
-        let other: f64 = try_to_f64(rhs)?;
+        let other: f64 = match try_to_f64(rhs) { 
+            Ok(val) => val,
+            Err(_) => return Err(PrecisonLossError)
+        };
         let money = Money::new(self.amount + other, self.currency);
         Ok(money)
     }
 }
-
-struct PrecisonLossError;
-
-fn try_to_f64(v: i128) -> Result<f64, PrecisonLossError> {
-    let attempt = v as f64;
-    (attempt as i128 == v)
-        .then_some(attempt)
-        .ok_or(PrecisonLossError)
-}
-
 
 /*
     Implement operation for Money with money
@@ -267,6 +261,7 @@ impl Into<Type> for Money {
         self.amount as Type
     }
 }
+
 
 #[cfg(test)]
 mod tests {
